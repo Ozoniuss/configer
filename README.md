@@ -1,5 +1,3 @@
-work in progress...
-
 # configer
 
 I wrote this package to have a quick and easy way to configure my personal projects. It uses [viper](https://github.com/spf13/viper) as the configuration package under the hood, and the [pflag](https://github.com/spf13/pflag) library to work with flags.
@@ -33,7 +31,7 @@ type Server struct {
 }
 ```
 
-Use the configer `ConfigOptions` struct to specify the project's configuration options. Through the `Bind` field, specify the field of the config struct the option is attached to:
+Use the configer `ConfigOptions` struct to specify the project's configuration options. Through the `ConfigKey` field, specify the field of the config struct the option is attached to:
 
 ```go
 // getProjectOpts returns all the configuration options enabled for the project.
@@ -50,6 +48,63 @@ func getProjectOpts() []cfg.ConfigOption {
 	}
 }
 ```
+
+Create the config:
+
+```go
+import (
+	"fmt"
+	cfg "github.com/Ozoniuss/configer"
+)
+
+func main() {
+	config := NewConfig()
+
+	parserOptions := []cfg.ParserOption{
+		cfg.WithConfigName("config"),
+		cfg.WithConfigType("yml"),
+		cfg.WithConfigPath("."),
+		cfg.WithConfigPath("./config"),
+		cfg.WithEnvPrefix("DEMO"),
+		cfg.WithEnvKeyReplacer("_"),
+	}
+
+	err := cfg.NewConfig(&config, getProjectOpts(), parserOptions...)
+	if err != nil {
+		fmt.Println("could not initialize config: %w", err)
+		return
+	}
+	
+	fmt.Printf("config: %+v", config)
+}
+```
+
+Output:
+
+```
+config: {Server:{Address:localhost Port:8080} Key:123456 Insecure:true}
+```
+
+See the available config options:
+
+```
+$ ./main --help
+Usage of main:
+      --insecure                Specify whether or not TLS is enabled. (default true)
+  -k, --key int                 The key required to access the server. (default 123456)
+      --server-address string   The address on which the server is listening for connections. (default "localhost")
+      --server-port int         The server port opened for incoming connections. (default 8080)
+```
+
+And you're all set. Specify config options via flags, environment variables, configuration files and default values, in this order of precedence.
+
+```
+$ DEMO_PORT=9090
+$ ./main --key 100 --server-address 0.0.0.0
+{Server:{Address:0.0.0.0 Port:9090} Key:100 Insecure:true}
+```
+
+See the [documentation](DOCUMENTATION.md) for more details and advanced usage.
 
 Personal notes
 --------------
