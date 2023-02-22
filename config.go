@@ -15,7 +15,7 @@ import (
 // NewConfig generates a new configuration setting for the project, based on
 // the provided config options. It unmarshals the options to the provided
 // struct, which can then be used in the project to read those options.
-func NewConfig(appOptions []ConfigOption, configStruct interface{}, parserOptions ...ParserOption) error {
+func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOptions ...ParserOption) error {
 
 	parser := newParser()
 	parser.setDefaultParserOptions()

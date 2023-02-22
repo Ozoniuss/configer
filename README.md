@@ -16,7 +16,40 @@ go get github.com/Ozoniuss/configer
 Usage
 -----
 
-To be continued.
+Start by defining a structure for storing the project's overall configuration. The runtime configurations will be unmarshaled into an object of this struct when the project is started, which is passed on via dependency injection.
+
+```go
+// Config holds the project's runtime configuration.
+type Config struct {
+	Server   Server
+	Key      int
+	Insecure bool
+}
+
+// Server defines the configuration options for the server.
+type Server struct {
+	Address string
+	Port    int32
+}
+```
+
+Use the configer `ConfigOptions` struct to specify the project's configuration options. Through the `Bind` field, specify the field of the config struct the option is attached to:
+
+```go
+// getProjectOpts returns all the configuration options enabled for the project.
+func getProjectOpts() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "server-address", Shorthand: "", Value: "Mirel", ConfigKey: "server.address",
+			Usage: "The address on which the server is listening for connections."},
+		{FlagName: "server-port", Shorthand: "", Value: 8080, ConfigKey: "server.port",
+			Usage: "The server port opened for incoming connections."},
+		{FlagName: "key", Shorthand: "k", Value: 123456, ConfigKey: "key",
+			Usage: "The key required to access the server."},
+		{FlagName: "insecure", Shorthand: "", Value: true, ConfigKey: "insecure",
+			Usage: "Specify whether or not TLS is enabled."},
+	}
+}
+```
 
 Personal notes
 --------------
