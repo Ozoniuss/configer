@@ -99,6 +99,7 @@ func NewConfig(appOptions []ConfigOption, configStruct interface{}, parserOption
 		}
 
 		configfile, err := os.Open(configpath)
+		defer configfile.Close()
 		if err != nil {
 			return fmt.Errorf("could not open config file: %w", err)
 		}
