@@ -1,4 +1,4 @@
-package config
+package configer
 
 // ParserOption is an interface which allows implementing the functional
 // options pattern for the config parser. By default, the package comes with

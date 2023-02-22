@@ -1,4 +1,4 @@
-package config
+package configer
 
 type configFileOption string
 

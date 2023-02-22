@@ -1,4 +1,4 @@
-package config
+package configer
 
 // ConfigOption defines the values for each coniguration option of a
 // microservice.

@@ -1,4 +1,4 @@
-package config
+package configer
 
 type writeFlagOption bool
 
