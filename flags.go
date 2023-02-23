@@ -2,6 +2,7 @@ package configer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/pflag"
 )
@@ -30,6 +31,8 @@ func defineFlags(configOptions []ConfigOption) error {
 				pflag.IntP(opt.FlagName, opt.Shorthand, opt.Value.(int), opt.Usage)
 			case int32:
 				pflag.Int32P(opt.FlagName, opt.Shorthand, opt.Value.(int32), opt.Usage)
+			case time.Duration:
+				pflag.DurationP(opt.FlagName, opt.Shorthand, opt.Value.(time.Duration), opt.Usage)
 			default:
 				return fmt.Errorf("Invalid flag value provided for option %s", opt.FlagName)
 			}
