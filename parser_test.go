@@ -79,7 +79,8 @@ func TestReadYaml(t *testing.T) {
 	err := NewConfig(&ex, getyamlopts(),
 		WithConfigName("test"),
 		WithConfigType("yml"),
-		WithConfigPath(dir))
+		WithConfigPath(dir),
+		WithSupressLogs())
 
 	// Clear comand-line flags at the end of the test, to allow initializing
 	// multiple configs. Since pflag.Parse() can only be called once on a
@@ -107,7 +108,8 @@ func TestReadYamlDefaultValues(t *testing.T) {
 
 	err := NewConfig(&ex, getyamlopts(),
 		WithConfigName("garbage"),
-		WithConfigType("yml"))
+		WithConfigType("yml"),
+		WithSupressLogs())
 
 	if err != nil {
 		t.Fatalf("call to new config failed: %s", err.Error())

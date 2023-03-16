@@ -9,10 +9,11 @@ import (
 )
 
 type configParser struct {
-	viper      *viper.Viper
-	readFlag   bool
-	writeFlag  bool
-	configName string
+	viper        *viper.Viper
+	readFlag     bool
+	writeFlag    bool
+	configName   string
+	suppressLogs bool
 }
 
 // newParser initializes a project parser with some default options.

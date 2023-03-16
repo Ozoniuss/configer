@@ -82,7 +82,9 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 				if writeFlag != nil {
 					additional += " Use --write-config to create it."
 				}
-				log.Warnf("Config file not found.%s\n", additional)
+				if !parser.suppressLogs {
+					log.Warnf("Config file not found.%s\n", additional)
+				}
 			} else {
 				return fmt.Errorf("could not read config: %w", err)
 			}
@@ -91,7 +93,9 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 	}
 
 	if parser.writeFlag && pflag.Lookup(writeFlagName()).Changed {
-		log.Infoln("Writing configuration file.")
+		if !parser.suppressLogs {
+			log.Infoln("Writing configuration file.")
+		}
 
 		if *writeFlag == "" {
 			*writeFlag = "."
