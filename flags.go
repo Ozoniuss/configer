@@ -33,8 +33,11 @@ func defineFlags(configOptions []ConfigOption) error {
 				pflag.Int32P(opt.FlagName, opt.Shorthand, opt.Value.(int32), opt.Usage)
 			case time.Duration:
 				pflag.DurationP(opt.FlagName, opt.Shorthand, opt.Value.(time.Duration), opt.Usage)
+			// Byte flag values are stored as hex.
+			case []byte:
+				pflag.BytesHexP(opt.FlagName, opt.Shorthand, opt.Value.([]byte), opt.Usage)
 			default:
-				return fmt.Errorf("Invalid flag value provided for option %s", opt.FlagName)
+				return fmt.Errorf("invalid flag value provided for option %s", opt.FlagName)
 			}
 		}
 	}

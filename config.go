@@ -64,10 +64,10 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 		}
 
 		configfile, err := os.Open(configpath)
-		defer configfile.Close()
 		if err != nil {
 			return fmt.Errorf("could not open config file: %w", err)
 		}
+		defer configfile.Close()
 
 		if err = parser.viper.ReadConfig(configfile); err != nil {
 			return fmt.Errorf("could not parse config from file %s: %w", configpath, err)
@@ -134,7 +134,5 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 			return fmt.Errorf("could not write viper config at path %s provided via write flag: %w", configpath, err)
 		}
 	}
-	//parser.viper.WriteConfigAs("../test2/config.yml")
-
 	return parser.viper.Unmarshal(&configStruct)
 }
