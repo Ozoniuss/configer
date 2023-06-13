@@ -37,7 +37,7 @@ Use the configer `ConfigOptions` struct to specify the project's configuration o
 // getProjectOpts returns all the configuration options enabled for the project.
 func getProjectOpts() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
-		{FlagName: "server-address", Shorthand: "", Value: "Mirel", ConfigKey: "server.address",
+		{FlagName: "server-address", Shorthand: "", Value: "localhost", ConfigKey: "server.address",
 			Usage: "The address on which the server is listening for connections."},
 		{FlagName: "server-port", Shorthand: "", Value: 8080, ConfigKey: "server.port",
 			Usage: "The server port opened for incoming connections."},
@@ -58,7 +58,7 @@ import (
 )
 
 func main() {
-	config := NewConfig()
+	var config Config
 
 	parserOptions := []cfg.ParserOption{
 		cfg.WithConfigName("config"),
