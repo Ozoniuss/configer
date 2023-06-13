@@ -106,8 +106,6 @@ $ ./main --key 100 --server-address 0.0.0.0
 {Server:{Address:0.0.0.0 Port:9090} Key:100 Insecure:true}
 ```
 
-See the [documentation](DOCUMENTATION.md) for more details and advanced usage.
-
 Setting the config keys when defining project options
 ----------------------------------------------------- 
 
