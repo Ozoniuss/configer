@@ -49,6 +49,8 @@ func getProjectOpts() []cfg.ConfigOption {
 }
 ```
 
+Note that the ConfigKey has not been chosen randomly and has a special meaning. See [this section](#setting-the-config-keys-when-defining-project-options) for more details about config keys.
+
 Create the config:
 
 ```go
@@ -105,6 +107,93 @@ $ ./main --key 100 --server-address 0.0.0.0
 ```
 
 See the [documentation](DOCUMENTATION.md) for more details and advanced usage.
+
+Setting the config keys when defining project options
+----------------------------------------------------- 
+
+Note that `ConfigKey` tells the parser which struct field to assign the option to, when unmarshaling into a Config object. So for example if your config looks like this:
+
+```go
+type Config struct {
+	Val1 MyType1
+}
+type MyType1 struct {
+	Val2 MyType2
+}
+type MyType2 struct {
+	Val3 int
+}
+```
+
+Then if you want to define a configuration option that unmarshals to the inner `Val3` field of this config, you have to set its config key to be `val1.val2.val3`.
+
+```go
+func getProjectOpts() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "myflag", Shorthand: "", Value: 100, ConfigKey: "val1.val2.val3",
+			Usage: "Config key example."},
+	}
+}
+// config: {Val1:{Val2:{Val3:100}}}
+
+func getProjectOpts() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "myflag", Shorthand: "", Value: 100, ConfigKey: "val1.val2.val3000",
+			Usage: "Config key example."},
+	}
+}
+// config: {Val1:{Val2:{Val3:0}}}
+```
+
+A limitation here is that you can only unmarshal project options to exported struct fields. This has to do with settability in reflection: see the Structs section in the [Laws of Reflection](https://go.dev/blog/laws-of-reflection) blog post.
+
+Custom config keys
+-----------------
+
+It is possible to use custom config keys for your struct, if desired. This can be achieved with the help of the `mapstructure` struct tag. Take a look at the following example:
+
+```go
+type Config struct {
+	Val1 MyType1 `mapstructure:"custom1"`
+}
+type MyType1 struct {
+	Val2 MyType2 `mapstructure:"custom2"`
+}
+type MyType2 struct {
+	Val3 int `mapstructure:"custom3"`
+}
+
+func getProjectOpts() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "myflag", Shorthand: "", Value: 100, ConfigKey: "custom1.custom2.custom3",
+			Usage: "Config key example."},
+	}
+}
+// config: {Val1:{Val2:{Val3:100}}}
+```
+
+This is particularly useful for multi-word struct keys, especially when associating them with environment variables:
+
+```go
+type Config struct {
+	Auth Auth
+}
+type Auth struct {
+	JWTSecret string `mapstructure:"jwt_secret"`
+}
+
+func getProjectOpts() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "jwt-secret", Shorthand: "", Value: "dontlook", ConfigKey: "auth.jwt_secret",
+			Usage: "Config key example."},
+	}
+}
+
+// Note that the main function above was used.
+// $ export DEMO_AUTH_JWT_SECRET='realsecret' && go run main.go 
+// config: {Auth:{JWTSecret:realsecret}}
+```
+
 
 Personal notes
 --------------
