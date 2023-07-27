@@ -2,11 +2,11 @@ package configer
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"path"
 	"strings"
-
-	log "github.com/Ozoniuss/stdlog"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -20,6 +20,11 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 	parser := newParser()
 	parser.setDefaultParserOptions()
 	parser.applyOptions(parserOptions...)
+
+	// Do not log anything to package users.
+	if parser.suppressLogs {
+		parser.log = log.New(io.Discard, "", 0)
+	}
 
 	// Define the flags after applying the options to allow defining special
 	// flags as well.
@@ -72,6 +77,8 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 		if err = parser.viper.ReadConfig(configfile); err != nil {
 			return fmt.Errorf("could not parse config from file %s: %w", configpath, err)
 		}
+		// TODO: use absolute path?
+		parser.log.Printf("[configer info] read config at %s\n", configpath)
 
 		// No explicit config path set, use the values provided via
 		// WithConfigPath.
@@ -79,23 +86,21 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 		if err := parser.viper.ReadInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 				additional := ""
+				// Do not show this additional message unless they enable
+				// --write-config.
 				if writeFlag != nil {
 					additional += " Use --write-config to create it."
 				}
-				if !parser.suppressLogs {
-					log.Warnf("Config file not found.%s\n", additional)
-				}
+				parser.log.Printf("[configer warn] Config file not found.%s\n", additional)
 			} else {
 				return fmt.Errorf("could not read config: %w", err)
 			}
 		}
-
+		parser.log.Printf("[configer info] read config at %s\n", parser.viper.ConfigFileUsed())
 	}
 
 	if parser.writeFlag && pflag.Lookup(writeFlagName()).Changed {
-		if !parser.suppressLogs {
-			log.Infoln("Writing configuration file.")
-		}
+		parser.log.Println("[configer info] Writing configuration file.")
 
 		if *writeFlag == "" {
 			*writeFlag = "."
@@ -129,10 +134,10 @@ func NewConfig(configStruct interface{}, appOptions []ConfigOption, parserOption
 			}
 		}
 
-		fmt.Println(configpath)
 		if err := parser.viper.WriteConfigAs(configpath); err != nil {
 			return fmt.Errorf("could not write viper config at path %s provided via write flag: %w", configpath, err)
 		}
+		parser.log.Printf("[configer info] writing config at %s\n", configpath)
 	}
 	return parser.viper.Unmarshal(&configStruct)
 }

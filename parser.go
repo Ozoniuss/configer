@@ -2,6 +2,8 @@ package configer
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/spf13/pflag"
@@ -14,6 +16,9 @@ type configParser struct {
 	writeFlag    bool
 	configName   string
 	suppressLogs bool
+
+	// Update to slog once go 1.21 is out.
+	log *log.Logger
 }
 
 // newParser initializes a project parser with some default options.
@@ -23,6 +28,8 @@ func newParser() *configParser {
 		writeFlag:  false,
 		readFlag:   false,
 		configName: "config.yml",
+		// Based on flags, the logger may be updated.
+		log: log.New(os.Stderr, "", 0),
 	}
 
 	return parser
