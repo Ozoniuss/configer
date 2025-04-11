@@ -1,3 +1,9 @@
+# Important: EOL notice
+
+Most of what I do nowadays is containerized, which means that applications are typically short-lived and configurations are immutable. It's quite common to restart your application when you change a configuration setting (which works well with e.g. a Kubernetes deployment and frankly, it doesn't really happen that often) and a full-blown configuration package with features like multiple config sources and listening for real-time updates just doesn't make sense to me anymore, as I just use env vars. I have no use for this package anymore and I will only keep it because it was fun to build at the time, but I've archived the repository and there will be no more updates coming.
+
+-----
+
 # configer
 
 I wrote this package to have a quick and easy way to configure my personal projects. It uses [viper](https://github.com/spf13/viper) as the configuration package under the hood, and the [pflag](https://github.com/spf13/pflag) library to work with flags.
